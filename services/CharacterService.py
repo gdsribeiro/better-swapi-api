@@ -20,50 +20,32 @@ class CharacterService:
 			).items()
 			if v != ""
 		}
-		print(queries)
 
 		fields = filters.fields.replace(" ", "").split(",")
 
-		homeworld = filters.homeworld.split(",")
-		species = filters.species.split(",")
-		vehicles = filters.vehicles.split(",")
-		films = filters.films.split(",")
-		starships = filters.starships.split(",")
+		field_map = {
+			"homeworld": ("planets", "name"),
+			"species": ("species", "name"),
+			"vehicles": ("vehicles", "name"),
+			"films": ("films", "title"),
+			"starships": ("starships", "name"),
+		}
 
-		# TODO Pelo amor de deus refatora isso
-    
 		with ThreadPoolExecutor(max_workers=6) as executor:
 			tasks['people'] = executor.submit(self.swapi.get_people)
-			
-			if "homeworld" in fields and len(homeworld):
-				tasks['planets'] = executor.submit(self.swapi.get_data, "planets")
-			
-			if "species" in fields and len(species):
-				tasks['species'] = executor.submit(self.swapi.get_data, "species")
-			
-			if "vehicles" in fields and len(vehicles):
-				tasks['vehicles'] = executor.submit(self.swapi.get_data, "vehicles")
-			
-			if "films" in fields and len(films):
-				tasks['films'] = executor.submit(self.swapi.get_data, "films")
-			
-			if "starships" in fields and len(starships):
-				tasks['starships'] = executor.submit(self.swapi.get_data, "starships")
-		
-		if "homeworld" in fields and len(homeworld):
-			planet_names = parse_to_set(tasks['planets'].result(), field="name")
-			
-		if "species" in fields and len(species):
-			species_names = parse_to_set(tasks['species'].result(), field="name")
-		
-		if "vehicles" in fields and len(vehicles):
-			vehicles_names = parse_to_set(tasks['vehicles'].result(), field="name")
-		
-		if"films" in fields and len(films):
-			films_titles = parse_to_set(tasks['films'].result(), field="title")
-		
-		if "starships" in fields and len(starships):
-			starships_names = parse_to_set(tasks['starships'].result(), field="name")
+			for k, v in field_map.items():
+				context, _ = v
+				filter_aux = getattr(filters, k).split(",")
+				if k in fields and len(filter_aux):
+					tasks[context] = executor.submit(self.swapi.get_data, context)
+
+		results = {}
+		for k, v in field_map.items():
+			context, field = v
+			filter_aux = getattr(filters, k).split(",")
+			if k in fields and len(filter_aux):
+				results[context] = parse_to_set(tasks[context].result(), field=field)
+	
 
 		characters = [
 			Character(
@@ -71,17 +53,17 @@ class CharacterService:
 				name = p.name,
 				birth_year = (parse := parse_birth_year(p.birth_year))[0],
 				period = parse[1],
-				homeworld = planet_names[p.homeworld] if "homeworld" in fields else "",
+				homeworld = results['planets'][p.homeworld] if "homeworld" in fields else "",
 				height = p.height,
 				mass = p.mass,
 				gender = p.gender,
 				eye_color = p.eye_color.capitalize(),
 				hair_color = p.hair_color.capitalize(),
 				skin_color = p.skin_color.capitalize(),
-				species = [species_names[url] for url in p.species] if "species" in fields else [],
-				vehicles = [vehicles_names[url] for url in p.vehicles] if "vehicles" in fields else [],
-				starships = [starships_names[url] for url in p.starships] if "starships" in fields else [],
-				films = [films_titles[url] for url in p.films] if "films" in fields else []
+				species = [results['species'][url] for url in p.species] if "species" in fields else [],
+				vehicles = [results['vehicles'][url] for url in p.vehicles] if "vehicles" in fields else [],
+				starships = [results['starships'][url] for url in p.starships] if "starships" in fields else [],
+				films = [results['films'][url] for url in p.films] if "films" in fields else []
 			)
 			for p in tasks['people'].result()
 		]
