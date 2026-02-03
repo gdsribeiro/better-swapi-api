@@ -1,6 +1,8 @@
 import requests
 from DTOs.PeopleDTO import PeopleDTO
-import json
+from DTOs.FilmDTO import FilmDTO
+#from DTOs.StarshipDTO import StarshipDTO
+#from DTOs.PlanetDTO import PlanetDTO
 
 class SWAPIClient:
 	def __init__(self):
@@ -47,3 +49,42 @@ class SWAPIClient:
 		
 		finally:
 			pass
+
+	def get_films(self):
+		try:
+			data = self.get_data("films")
+			return [FilmDTO.model_validate(r) for r in data]
+		
+		#except ValidationError as e:
+		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+		#	raise ValueError("Erro de integração: Dados da API inválidos")
+		
+		finally:
+			pass
+'''
+	def get_starships(self):
+		try:
+			data = self.get_data("starships")
+			return [StarshipDTO.model_validate(r) for r in data]
+		
+		#except ValidationError as e:
+		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+		#	raise ValueError("Erro de integração: Dados da API inválidos")
+		
+		finally:
+			pass
+
+	
+
+	def get_planet(self):
+		try:
+			data = self.get_data("planets")
+			return [PlanetDTO.model_validate(r) for r in data]
+		
+		#except ValidationError as e:
+		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+		#	raise ValueError("Erro de integração: Dados da API inválidos")
+		
+		finally:
+			pass
+'''

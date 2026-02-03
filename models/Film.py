@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Literal
-from enum import Enum
+from typing import List
 from datetime import datetime
 '''
 class EyeColor(str, Enum):
@@ -12,23 +11,21 @@ class HairColor(str, Enum):
 class SkinColor(str, Enum):
 	FAIR = "Fair"
 '''
-class Character(BaseModel):
+class Film(BaseModel):
 	url: str
-	name: str
-	birth_year: float
-	period: str
-	homeworld: str
-	height: str
-	mass: str
-	gender: str
-	eye_color: str
-	hair_color: str
-	skin_color: str
+	title: str
+	director: str
+	producer: str
 	
-	species: List[str]
-	vehicles: List[str]
-	starships: List[str]
-	films: List[str]
+	episode_id: int
+	opening_crawl: str
 
+	characters: List[str]
+	species: List[str]
+	starships: List[str]
+	vehicles: List[str]
+	planets: List[str]
+	
+	release_date: datetime 
 	created_at: datetime
 	last_edited: datetime
