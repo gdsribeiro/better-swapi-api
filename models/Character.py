@@ -24,11 +24,8 @@ class Character(BaseModel):
 	eye_color: str
 	hair_color: str
 	skin_color: str
-	
+
 	species: List[str]
 	vehicles: List[str]
 	starships: List[str]
 	films: List[str]
-
-	created_at: datetime
-	last_edited: datetime

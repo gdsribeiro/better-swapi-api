@@ -26,6 +26,4 @@ class Film(BaseModel):
 	vehicles: List[str]
 	planets: List[str]
 	
-	release_date: datetime 
-	created_at: datetime
-	last_edited: datetime
+	release_date: datetime

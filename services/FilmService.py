@@ -41,9 +41,7 @@ class FilmService:
 				starships = [starships_names[url] for url in f.starships],
 				vehicles = [vehicles_names[url] for url in f.vehicles],
 				planets = [planets_names[url] for url in f.planets],
-				release_date = f.release_date,
-				created_at = f.created,
-				last_edited = f.edited
+				release_date = f.release_date
 			)
 			for f in tasks['films'].result()
 		]

@@ -1,17 +1,18 @@
-from DTOs.CharactersQueryParamsDTO import CharactersQueryParamsDTO
+from DTOs.QueryParamsDTO import QueryParamsDTO
 from services.CharacterService import CharacterService
 
 class CharacterController:
-	def get_characters(query_params):
+	def get_personagens(query_params, payload):
 		character_service = CharacterService()
 
 		params = dict(query_params)
-		
 		try:
-			filters = CharactersQueryParamsDTO.model_validate(params)
+			filters = QueryParamsDTO.model_validate(params)
 		except:
 			# TODO Tratar erro
 			pass
 		characters = character_service.get_characters(filters)
 
-		return characters
+		response = [c.model_dump() for c in characters]
+
+		return response

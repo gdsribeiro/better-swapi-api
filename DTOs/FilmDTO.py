@@ -3,7 +3,6 @@ from typing import List
 from datetime import datetime
 
 class FilmDTO(BaseModel):
-    url: str
     title: str
     director: str
     producer: str
@@ -17,6 +16,4 @@ class FilmDTO(BaseModel):
     vehicles: List[str]
     planets: List[str]
 	
-    release_date: datetime 
-    created: datetime
-    edited: datetime
+    release_date: datetime

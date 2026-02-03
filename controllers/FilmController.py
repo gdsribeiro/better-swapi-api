@@ -1,4 +1,4 @@
-from DTOs.QueryParamsDTO import QueryParamsDTO
+from DTOs.FilmsQueryParamsDTO import FilmsQueryParamsDTO
 from services.FilmService import FilmService
 
 class FilmController:
@@ -8,7 +8,7 @@ class FilmController:
 		params = dict(query_params)
 
 		try:
-			filters = QueryParamsDTO.model_validate(params)
+			filters = FilmsQueryParamsDTO.model_validate(params)
 		except:
 			# TODO Tratar erro
 			pass
