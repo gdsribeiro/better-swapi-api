@@ -1,5 +1,6 @@
 from DTOs.CharactersQueryParamsDTO import CharactersQueryParamsDTO
 from services.CharacterService import CharacterService
+from pydantic import ValidationError
 
 class CharacterController:
 	def get_characters(query_params):
@@ -9,9 +10,12 @@ class CharacterController:
 		
 		try:
 			filters = CharactersQueryParamsDTO.model_validate(params)
-		except:
-			# TODO Tratar erro
-			pass
-		characters = character_service.get_characters(filters)
+		except ValidationError as e:
+			return {"error": "Validation Error", "details": e.errors()}, 400
+
+		try:
+			characters = character_service.get_characters(filters)
+		except Exception as e:
+			return {"error": "Internal Server Error", "details": str(e)}, 500
 
 		return characters

@@ -1,5 +1,6 @@
 from DTOs.FilmsQueryParamsDTO import FilmsQueryParamsDTO
 from services.FilmService import FilmService
+from pydantic import ValidationError
 
 class FilmController:
 	def get_films(query_params):
@@ -9,10 +10,12 @@ class FilmController:
 
 		try:
 			filters = FilmsQueryParamsDTO.model_validate(params)
-		except:
-			# TODO Tratar erro
-			pass
+		except ValidationError as e:
+			return {"error": "Validation Error", "details": e.errors()}, 400
 
-		films = film_service.get_films(filters)
+		try:
+			films = film_service.get_films(filters)
+		except Exception as e:
+			return {"error": "Internal Server Error", "details": str(e)}, 500
 
 		return films

@@ -1,5 +1,6 @@
 from DTOs.PlanetsQueryParamsDTO import PlanetsQueryParamsDTO
 from services.PlanetService import PlanetService
+from pydantic import ValidationError
 
 class PlanetController:
 	def get_planets(query_params):
@@ -9,9 +10,12 @@ class PlanetController:
 
 		try:
 			filters = PlanetsQueryParamsDTO.model_validate(params)
-		except:
-			# TODO Tratar erro
-			pass
-		planets = planet_service.get_planets(filters)
+		except ValidationError as e:
+			return {"error": "Validation Error", "details": e.errors()}, 400
+		
+		try:
+			planets = planet_service.get_planets(filters)
+		except Exception as e:
+			return {"error": "Internal Server Error", "details": str(e)}, 500
 
 		return planets

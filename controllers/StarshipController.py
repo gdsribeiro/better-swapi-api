@@ -1,5 +1,6 @@
 from DTOs.StarshipsQueryParamsDTO import StarshipsQueryParamsDTO
 from services.StarshipService import StarshipService
+from pydantic import ValidationError
 
 class StarshipController:
 	def get_starships(query_params):
@@ -9,9 +10,12 @@ class StarshipController:
 
 		try:
 			filters = StarshipsQueryParamsDTO.model_validate(params)
-		except:
-			# TODO Tratar erro
-			pass
-		starships = starship_service.get_starships(filters)
+		except ValidationError as e:
+			return {"error": "Validation Error", "details": e.errors()}, 400
+		
+		try:
+			starships = starship_service.get_starships(filters)
+		except Exception as e:
+			return {"error": "Internal Server Error", "details": str(e)}, 500
 
 		return starships
