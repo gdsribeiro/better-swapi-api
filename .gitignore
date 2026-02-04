@@ -1,0 +1,27 @@
+# --- Python Specific ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Environments ---
+.venv/
+venv/
+ENV/
+env/
+bin/
+lib/
+include/
+
+# --- VS Code Specific ---
+.vscode/
+# Nota: Se você quiser compartilhar as recomendações de extensões com o time, 
+# remova a linha acima e use apenas:
+# .vscode/settings.json
+# .vscode/tasks.json
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
