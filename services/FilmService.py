@@ -17,7 +17,7 @@ class FilmService:
 				exclude_none=True,
 				exclude=set(QueryParamsDTO.model_fields.keys())
 			).items()
-			if v != ""
+			if v
 		}
 
 		fields = filters.fields.replace(" ", "").split(",") if filters.fields else None
