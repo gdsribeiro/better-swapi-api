@@ -1,7 +1,6 @@
 from models.Film import Film
 from DTOs.QueryParamsDTO import QueryParamsDTO
 from clients.SWAPIClient import SWAPIClient
-import re
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -82,16 +81,6 @@ class FilmService:
 		end = start + filters.limit
 
 		return [f.model_dump(include=set(fields) if fields else None) for f in filtered_films[start:end]]
-	
-def parse_birth_year(birth_year):
-	if birth_year:
-		match = re.search(r"([\d\.]+)\s*(BBY|ABY)", birth_year, re.IGNORECASE)
-		if match:
-			year = float(match.group(1))
-			period = match.group(2).upper()
-			return year, period
-	
-	return 0, "Unknown"
 
 def parse_to_set(result, field="name", id="url"):
 	return {r.get(id): r.get(field) for r in result}

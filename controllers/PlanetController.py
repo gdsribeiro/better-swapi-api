@@ -1,18 +1,17 @@
-from DTOs.QueryParamsDTO import QueryParamsDTO
-from services.CharacterService import CharacterService
+from DTOs.PlanetsQueryParamsDTO import PlanetsQueryParamsDTO
+from services.PlanetService import PlanetService
 
-class CharacterController:
-	def get_personagens(query_params, payload):
-		character_service = CharacterService()
+class PlanetController:
+	def get_planets(query_params):
+		planet_service = PlanetService()
 
 		params = dict(query_params)
+
 		try:
-			filters = QueryParamsDTO.model_validate(params)
+			filters = PlanetsQueryParamsDTO.model_validate(params)
 		except:
 			# TODO Tratar erro
 			pass
-		characters = character_service.get_characters(filters)
+		planets = planet_service.get_planets(filters)
 
-		response = [c.model_dump() for c in characters]
-
-		return response
+		return planets

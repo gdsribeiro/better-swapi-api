@@ -1,18 +1,17 @@
-from DTOs.QueryParamsDTO import QueryParamsDTO
-from services.CharacterService import CharacterService
+from DTOs.StarshipsQueryParamsDTO import StarshipsQueryParamsDTO
+from services.StarshipService import StarshipService
 
-class CharacterController:
-	def get_personagens(query_params, payload):
-		character_service = CharacterService()
+class StarshipController:
+	def get_starships(query_params):
+		starship_service = StarshipService()
 
 		params = dict(query_params)
+
 		try:
-			filters = QueryParamsDTO.model_validate(params)
+			filters = StarshipsQueryParamsDTO.model_validate(params)
 		except:
 			# TODO Tratar erro
 			pass
-		characters = character_service.get_characters(filters)
+		starships = starship_service.get_starships(filters)
 
-		response = [c.model_dump() for c in characters]
-
-		return response
+		return starships

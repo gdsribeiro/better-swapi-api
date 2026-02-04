@@ -1,8 +1,8 @@
 import requests
 from DTOs.PeopleDTO import PeopleDTO
 from DTOs.FilmDTO import FilmDTO
-#from DTOs.StarshipDTO import StarshipDTO
-#from DTOs.PlanetDTO import PlanetDTO
+from DTOs.StarshipDTO import StarshipDTO
+from DTOs.PlanetDTO import PlanetDTO
 
 class SWAPIClient:
 	def __init__(self):
@@ -61,7 +61,7 @@ class SWAPIClient:
 		
 		finally:
 			pass
-'''
+
 	def get_starships(self):
 		try:
 			data = self.get_data("starships")
@@ -76,7 +76,7 @@ class SWAPIClient:
 
 	
 
-	def get_planet(self):
+	def get_planets(self):
 		try:
 			data = self.get_data("planets")
 			return [PlanetDTO.model_validate(r) for r in data]
@@ -87,4 +87,3 @@ class SWAPIClient:
 		
 		finally:
 			pass
-'''

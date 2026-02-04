@@ -1,8 +1,8 @@
 import functions_framework
 from controllers.CharacterController import CharacterController
 from controllers.FilmController import FilmController
-#from controllers.PlanetController import PlanetController
-#from controllers.StarshipController import StarshipController
+from controllers.PlanetController import PlanetController
+from controllers.StarshipController import StarshipController
 
 @functions_framework.http
 def main_http(request):
@@ -24,8 +24,10 @@ def main_http(request):
     if path == '/personagens':
         return CharacterController.get_characters(query_params)
     
-    #if path == '/planetas':
-    #    return PlanetController.get_planets(query_params)
+    if path == '/planetas':
+        return PlanetController.get_planets(query_params)
     
-    #if path == '/naves':
-    #    return StarshipController.get_starships(query_params)
+    if path == '/naves':
+        return StarshipController.get_starships(query_params)
+
+    return "Not Found", 404

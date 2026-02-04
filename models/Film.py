@@ -1,16 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 from datetime import datetime
-'''
-class EyeColor(str, Enum):
-	BLUE = "Blue"
 
-class HairColor(str, Enum):
-	BLOND = "Blond"
-
-class SkinColor(str, Enum):
-	FAIR = "Fair"
-'''
 class Film(BaseModel):
 	url: str
 	title: str
