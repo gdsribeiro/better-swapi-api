@@ -15,6 +15,4 @@ class FilmController:
 
 		films = film_service.get_films(filters)
 
-		response = [c.model_dump() for c in films]
-
-		return response
+		return films

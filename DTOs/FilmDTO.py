@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 
 class FilmDTO(BaseModel):
+    url: str
     title: str
     director: str
     producer: str

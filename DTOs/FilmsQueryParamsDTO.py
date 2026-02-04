@@ -6,7 +6,7 @@ class FilmsQueryParamsDTO(QueryParamsDTO) :
 	title: str = ""
 	director: str = ""
 	producer: str = ""
-	episode_id: int = ""
+	episode_id: int = 0
 	opening_crawl: str = ""
 	characters: str = ""
 	species: str = ""

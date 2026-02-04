@@ -1,4 +1,5 @@
 from models.Film import Film
+from DTOs.QueryParamsDTO import QueryParamsDTO
 from clients.SWAPIClient import SWAPIClient
 import re
 
@@ -11,22 +12,40 @@ class FilmService:
 	def get_films(self, filters):
 		tasks = {}
 
-		# TODO Executar condicionalmente
+		queries = {
+			k: v
+			for k, v in filters.model_dump(
+				exclude_none=True,
+				exclude=set(QueryParamsDTO.model_fields.keys())
+			).items()
+			if v != ""
+		}
+
+		fields = filters.fields.replace(" ", "").split(",") if filters.fields else None
+
+		field_map = {
+			"character": ("people", "name", "characters"),
+			"planet": ("planets", "name", "planets"),
+			"specie": ("species", "name", "species"),
+			"vehicle": ("vehicles", "name", "vehicles"),
+			"starship": ("starships", "name", "starships"),
+		}
     
 		with ThreadPoolExecutor(max_workers=6) as executor:
-			# Dispara a busca principal de personagens
 			tasks['films'] = executor.submit(self.swapi.get_films)
-			tasks['planets'] = executor.submit(self.swapi.get_data, "planets")
-			tasks['species'] = executor.submit(self.swapi.get_data, "species")
-			tasks['vehicles'] = executor.submit(self.swapi.get_data, "vehicles")
-			tasks['characters'] = executor.submit(self.swapi.get_data, "people")
-			tasks['starships'] = executor.submit(self.swapi.get_data, "starships")
-		
-		characters_names	= parse_to_set(tasks['characters'].result(), field="name")
-		planets_names		= parse_to_set(tasks['planets'].result(), field="name")
-		species_names		= parse_to_set(tasks['species'].result(), field="name")
-		vehicles_names		= parse_to_set(tasks['vehicles'].result(), field="name")
-		starships_names		= parse_to_set(tasks['starships'].result(), field="name")
+
+			for k, v in field_map.items():
+				context, _, atribute = v
+				filter_aux = getattr(filters, atribute).split(",")
+				if (not fields or atribute in fields) and len(filter_aux):
+					tasks[context] = executor.submit(self.swapi.get_data, context)
+
+		results = {}
+		for k, v in field_map.items():
+			context, field, atribute = v
+			filter_aux = getattr(filters, atribute).split(",")
+			if (not fields or atribute in fields) and len(filter_aux):
+				results[context] = parse_to_set(tasks[context].result(), field=field)
 
 		films = [
 			Film(
@@ -36,11 +55,11 @@ class FilmService:
 				producer = f.producer,
 				episode_id = f.episode_id,
 				opening_crawl = f.opening_crawl,
-				characters = [characters_names[url] for url in f.characters],
-				species = [species_names[url] for url in f.species],
-				starships = [starships_names[url] for url in f.starships],
-				vehicles = [vehicles_names[url] for url in f.vehicles],
-				planets = [planets_names[url] for url in f.planets],
+				characters = [results['people'][url] for url in f.characters] if (not fields or 'characters' in fields) else [],
+				species = [results['species'][url] for url in f.species] if (not fields or "species" in fields) else [],
+				starships = [results['starships'][url] for url in f.starships] if (not fields or 'starships' in fields) else [],
+				vehicles = [results['vehicles'][url] for url in f.vehicles] if (not fields or 'vehicles' in fields) else [],
+				planets = [results['planets'][url] for url in f.planets] if (not fields or 'planets' in fields) else [],
 				release_date = f.release_date
 			)
 			for f in tasks['films'].result()
@@ -51,14 +70,18 @@ class FilmService:
 			reverse=filters.order=="desc"
 		)
 
-		# TODO Map
-
-		# TODO Filter
+		filtered_films = [
+			f for f in films 
+			if all(
+				str(value).lower() in str(getattr(f, key)).lower() 
+				for key, value in queries.items()
+			)
+		]
 
 		start = (filters.page - 1) * filters.limit
 		end = start + filters.limit
 
-		return films[start:end]
+		return [f.model_dump(include=set(fields) if fields else None) for f in filtered_films[start:end]]
 	
 def parse_birth_year(birth_year):
 	if birth_year:
