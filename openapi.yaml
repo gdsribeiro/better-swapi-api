@@ -1,0 +1,53 @@
+swagger: '2.0'
+info:
+  title: Better SWAPI
+  description: API Gateway configuration for Better SWAPI
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+security:
+  - api_key: []
+paths:
+  /filmes:
+    get:
+      summary: Listar filmes
+      operationId: getFilms
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/filmes
+      responses:
+        '200':
+          description: Sucesso
+  /personagens:
+    get:
+      summary: Listar personagens
+      operationId: getCharacters
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/personagens
+      responses:
+        '200':
+          description: Sucesso
+  /planetas:
+    get:
+      summary: Listar planetas
+      operationId: getPlanets
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/planetas
+      responses:
+        '200':
+          description: Sucesso
+  /naves:
+    get:
+      summary: Listar naves
+      operationId: getStarships
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/naves
+      responses:
+        '200':
+          description: Sucesso
