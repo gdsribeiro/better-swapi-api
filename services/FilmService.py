@@ -1,12 +1,15 @@
 from models.Film import Film
+from models.Description import Description
 from DTOs.QueryParamsDTO import QueryParamsDTO
 from clients.SWAPIClient import SWAPIClient
+from clients.GroqClient import GroqClient
 
 from concurrent.futures import ThreadPoolExecutor
 
 class FilmService:
 	def __init__(self):
 		self.swapi = SWAPIClient()
+		self.groq = GroqClient()
 
 	def get_films(self, filters):
 		tasks = {}
@@ -81,6 +84,52 @@ class FilmService:
 		end = start + filters.limit
 
 		return [f.model_dump(include=set(fields) if fields else None) for f in filtered_films[start:end]]
+	
+	def get_film_description(self, filters):
+		films = self.get_films(filters)
+
+		descriptions = []
+
+		for f in films:
+			result = self.groq.invoke(prompt=get_prompt(f))
+
+			description = Description(
+				title=f['title'],
+				director=f['director'],
+				producer=f['producer'],
+				episode_id=f['episode_id'],
+				description=result,
+				release_date=f['release_date']
+			)
+
+			descriptions.append(description)
+
+		return [d.model_dump() for d in descriptions]
 
 def parse_to_set(result, field="name", id="url"):
 	return {r.get(id): r.get(field) for r in result}
+
+def get_prompt(film):
+	return f'''
+		Você é um assistente de IA especializado em gerar descrições concisas e envolventes de filmes de ficção científica.
+
+		# Objetivo:
+			Gere uma descrição de um filme a partir das informações neste json:
+			
+			{film}
+
+		# Instruções:
+
+			1. Leia atentamente as informações fornecidas no json.
+			2. Crie uma descrição que capture a essência do filme, destacando o maximo de informações fornecidas.
+			3. Mantenha a descrição entre 50 e 300 palavras.
+			4. Use uma linguagem envolvente e cativante, adequada para um público amplo.
+			5. Certifique-se de que a descrição seja original e não uma repetição do texto fornecido.
+			
+		# Formato de sáida:
+			Forneça apenas a descrição do filme como uma string simples, sem qualquer formatação adicional ou etiquetas.
+
+		# Personalidade:
+
+			Adote um tom entusiástico e apaixonado, como um fã de ficção científica compartilhando seu filme favorito com amigos.
+	'''

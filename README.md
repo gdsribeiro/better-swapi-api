@@ -33,6 +33,23 @@ curl -X GET "https://<url>/filmes?title=Hope&sort_by=release_date&order=asc" \
      -H "x-api-key: SUA_CHAVE_AQUI"
 ```
 
+### 📝 Descrição de Filmes (`/filmes/descricao`)
+Retorna uma descrição gerada por IA, a partir dos dados da SWAPI, sobre os filmes filtrados.
+
+**Filtros Específicos:**
+- `title`
+- `episode_id`
+- `opening_crawl`
+- `director`
+- `producer`
+- `release_date`
+
+**Exemplo:**
+```bash
+curl -X GET "https://<url>/filmes/descricao?title=Hope" \
+     -H "x-api-key: SUA_CHAVE_AQUI"
+```
+
 ### 🦸 Personagens (`/personagens`)
 Retorna a lista de personagens.
 
