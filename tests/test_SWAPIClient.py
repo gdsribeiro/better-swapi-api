@@ -59,7 +59,7 @@ def test_get_data_404(client, mock_requests_get, mocker):
 
     result = client.get_data("unknown")
 
-    assert result is None
+    assert result == []
 
 def test_get_data_server_error(client, mock_requests_get, mocker):
     mock_response = mocker.MagicMock()
@@ -118,3 +118,11 @@ def test_get_films_success(client, mocker):
     assert len(result) == 1
     assert result[0].title == "A New Hope"
     assert result[0].episode_id == 4
+
+def test_get_people_validation_error(client, mocker):
+    mock_get_data = mocker.patch.object(client, 'get_data')
+    # Missing required fields
+    mock_get_data.return_value = [{'invalid': 'data'}]
+
+    with pytest.raises(ValueError, match='Erro de integração: Dados da API inválidos'):
+        client.get_people()

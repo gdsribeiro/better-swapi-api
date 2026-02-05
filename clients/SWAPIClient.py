@@ -1,4 +1,5 @@
 import requests
+from pydantic import ValidationError
 from DTOs.PeopleDTO import PeopleDTO
 from DTOs.FilmDTO import FilmDTO
 from DTOs.StarshipDTO import StarshipDTO
@@ -14,7 +15,6 @@ class SWAPIClient:
 			next = f"{self.base_url}/{context}"
 
 			while True:
-				print(f"Request in {context}")
 				response = requests.get(next)
 				response.raise_for_status()
 
@@ -34,7 +34,7 @@ class SWAPIClient:
 		except requests.HTTPError as e:
 			if e.response.status_code == 404:
 				print("Dado não encontrado na API.")
-				return None
+				return []
 			print(f"Erro de API: {e}")
 			raise
 
@@ -43,47 +43,33 @@ class SWAPIClient:
 			data = self.get_data("people")
 			return [PeopleDTO.model_validate(r) for r in data]
 		
-		#except ValidationError as e:
-		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
-		#	raise ValueError("Erro de integração: Dados da API inválidos")
-		
-		finally:
-			pass
+		except ValidationError as e:
+			print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+			raise ValueError("Erro de integração: Dados da API inválidos")
 
 	def get_films(self):
 		try:
 			data = self.get_data("films")
 			return [FilmDTO.model_validate(r) for r in data]
 		
-		#except ValidationError as e:
-		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
-		#	raise ValueError("Erro de integração: Dados da API inválidos")
-		
-		finally:
-			pass
+		except ValidationError as e:
+			print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+			raise ValueError("Erro de integração: Dados da API inválidos")
 
 	def get_starships(self):
 		try:
 			data = self.get_data("starships")
 			return [StarshipDTO.model_validate(r) for r in data]
 		
-		#except ValidationError as e:
-		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
-		#	raise ValueError("Erro de integração: Dados da API inválidos")
-		
-		finally:
-			pass
-
-	
+		except ValidationError as e:
+			print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+			raise ValueError("Erro de integração: Dados da API inválidos")
 
 	def get_planets(self):
 		try:
 			data = self.get_data("planets")
 			return [PlanetDTO.model_validate(r) for r in data]
 		
-		#except ValidationError as e:
-		#	print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
-		#	raise ValueError("Erro de integração: Dados da API inválidos")
-		
-		finally:
-			pass
+		except ValidationError as e:
+			print(f"A API retornou dados inválidos! Contrato quebrado: {e}")
+			raise ValueError("Erro de integração: Dados da API inválidos")
