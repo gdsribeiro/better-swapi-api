@@ -11,6 +11,19 @@ app.register_blueprint(films_bp)
 app.register_blueprint(planets_bp)
 app.register_blueprint(starships_bp)
 
+@app.route('/', methods=['GET'])
+def index():
+    return {
+        "message": "Welcome to Better SWAPI",
+        "endpoints": {
+            "films": "/filmes",
+            "films_description": "/filmes/descricao",
+            "characters": "/personagens",
+            "planets": "/planetas",
+            "starships": "/naves"
+        }
+    }
+
 @app.errorhandler(404)
 def not_found(e):
     return "Not Found", 404

@@ -15,12 +15,30 @@ securityDefinitions:
 security:
   - api_key: []
 paths:
+  /:
+    get:
+      summary: Endpoint raiz
+      operationId: root
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/
+      responses:
+        '200':
+          description: Sucesso
   /filmes:
     get:
       summary: Listar filmes
       operationId: getFilms
       x-google-backend:
         address: https://better-swapi-api-752136049962.us-east1.run.app/filmes
+      responses:
+        '200':
+          description: Sucesso
+  /filmes/descricao:
+    get:
+      summary: Descrição de filmes
+      operationId: getFilmsDescription
+      x-google-backend:
+        address: https://better-swapi-api-752136049962.us-east1.run.app/filmes/descricao
       responses:
         '200':
           description: Sucesso
